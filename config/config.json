@@ -1,0 +1,9 @@
+{
+    "MySQL": {
+        "username": "webitclo_webbook",
+        "password": "webbookPW#2018",
+        "database": "webitclo_webbook",
+        "host": "db4free.net",
+        "dialect": "mysql"
+    }
+}
