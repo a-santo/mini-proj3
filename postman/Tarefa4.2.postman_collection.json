@@ -1,0 +1,602 @@
+{
+	"info": {
+		"_postman_id": "64bc9905-7fd8-4c91-a520-092daffadf81",
+		"name": "Tarefa4.2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "committee",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nome",
+							"value": "",
+							"description": "committee member name",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "",
+							"description": "committee member email",
+							"type": "text"
+						},
+						{
+							"key": "telefone",
+							"value": "",
+							"description": "committee member telephone",
+							"type": "text"
+						},
+						{
+							"key": "foto",
+							"value": "",
+							"description": "committee member url photo",
+							"type": "text"
+						},
+						{
+							"key": "instituicao",
+							"value": "",
+							"description": "committee member work institution",
+							"type": "text"
+						},
+						{
+							"key": "profissao",
+							"value": "",
+							"description": "committee member work title",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/committee/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"committee",
+						""
+					]
+				},
+				"description": "insert a commitee member"
+			},
+			"response": []
+		},
+		{
+			"name": "committee",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/committee/{{idCommitteeMember}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"committee",
+						"{{idCommitteeMember}}"
+					]
+				},
+				"description": "get a commitee member id"
+			},
+			"response": []
+		},
+		{
+			"name": "committee (todos)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/committee/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"committee",
+						""
+					]
+				},
+				"description": "get all commitee members"
+			},
+			"response": []
+		},
+		{
+			"name": "committee",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nome",
+							"value": "",
+							"description": "committee member name",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "",
+							"description": "committee member email",
+							"type": "text"
+						},
+						{
+							"key": "telefone",
+							"value": "",
+							"description": "committee member telephone",
+							"type": "text"
+						},
+						{
+							"key": "foto",
+							"value": "",
+							"description": "committee member url photo",
+							"type": "text"
+						},
+						{
+							"key": "instituicao",
+							"value": "",
+							"description": "committee member work institution",
+							"type": "text"
+						},
+						{
+							"key": "profissao",
+							"value": "",
+							"description": "committee member work title",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/committee/{{idmember}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"committee",
+						"{{idmember}}"
+					]
+				},
+				"description": "update a commitee member id"
+			},
+			"response": []
+		},
+		{
+			"name": "committee",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/committee/{{id}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"committee",
+						"{{id}}"
+					]
+				},
+				"description": "delete a commitee member id"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/committee",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/conferences/{{idconference}}/committee/{{idcommitteemember}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"committee",
+						"{{idcommitteemember}}"
+					]
+				},
+				"description": "insert a commitee member in a conference"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/committee",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/conferences/{{idconference}}/committee",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"committee"
+					]
+				},
+				"description": "read all the commitee members from conferences"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/committee",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/conferences/{{idconference}}/committee/{{idcommitteemember}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"committee",
+						"{{idcommitteemember}}"
+					]
+				},
+				"description": "delete a commitee member from a conference"
+			},
+			"response": []
+		},
+		{
+			"name": "volunteers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nome",
+							"value": "",
+							"description": "volunteer name",
+							"type": "text"
+						},
+						{
+							"key": "telefone",
+							"value": "",
+							"description": "volunteer telephone",
+							"type": "text"
+						},
+						{
+							"key": "foto",
+							"value": "",
+							"description": "volunteer url photo",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/volunteers/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"volunteers",
+						""
+					]
+				},
+				"description": "insert a volunteer"
+			},
+			"response": []
+		},
+		{
+			"name": "volunteers (todos)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/volunteers/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"volunteers",
+						""
+					]
+				},
+				"description": "read all volunteers"
+			},
+			"response": []
+		},
+		{
+			"name": "volunteers",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/volunteers/{{idVolunteer}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"volunteers",
+						"{{idVolunteer}}"
+					]
+				},
+				"description": "get a volunteer id"
+			},
+			"response": []
+		},
+		{
+			"name": "volunteers",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "nome",
+							"value": "",
+							"description": "volunteer name",
+							"type": "text"
+						},
+						{
+							"key": "telefone",
+							"value": "",
+							"description": "volunteer telephone",
+							"type": "text"
+						},
+						{
+							"key": "foto",
+							"value": "",
+							"description": "volunteer url photo",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/volunteers/{{idvolunteer}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"volunteers",
+						"{{idvolunteer}}"
+					]
+				},
+				"description": "update a volunteer id"
+			},
+			"response": []
+		},
+		{
+			"name": "volunteers",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/volunteers/{{id}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"volunteers",
+						"{{id}}"
+					]
+				},
+				"description": "delete a volunteer id"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/volunteers",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8080/conferences/{{idconference}}/volunteers/{{idvolunteer}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"volunteers",
+						"{{idvolunteer}}"
+					]
+				},
+				"description": "insert a volunteer in a conference"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/volunteers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/conferences/{{idconference}}/volunteers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"volunteers"
+					]
+				},
+				"description": "read all the volunteers from conferences"
+			},
+			"response": []
+		},
+		{
+			"name": "conferences/volunteers",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/conferences/{{idconference}}/volunteers/{{idvolunteer}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"conferences",
+						"{{idconference}}",
+						"volunteers",
+						"{{idvolunteer}}"
+					]
+				},
+				"description": "delete a volunteer from a conference"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
