@@ -1,3 +1,4 @@
+/*
 var bCrypt = require('bcrypt-nodejs');
 const jsonMessagesPath = __dirname + "/../../assets/jsonMessages/";
 var jsonMessages = require(jsonMessagesPath + "login");
@@ -81,3 +82,4 @@ module.exports = function(passport, user) {
     }
   ));
 }
+*/

@@ -14,17 +14,17 @@ router.get('/', function(req, res) {
 
 router.get('/speakers/', controllerSpeaker.read);
 router.get('/speakers/:id', controllerSpeaker.readID);
-router.post('/speakers/', isLoggedIn, controllerSpeaker.save);
-router.put('/speakers/:id', isLoggedIn, isLoggedIn, controllerSpeaker.update);
-router.put('/speakers/del/:id', isLoggedIn, controllerSpeaker.deleteL);
-router.delete('/speakers/:id', isLoggedIn, controllerSpeaker.deleteF);
+router.post('/speakers/', controllerSpeaker.save);
+router.put('/speakers/:id', controllerSpeaker.update);
+router.put('/speakers/del/:id', controllerSpeaker.deleteL);
+router.delete('/speakers/:id', controllerSpeaker.deleteF);
 
 router.get('/sponsors/', controllerSponsor.read);
 router.get('/sponsors/:id', controllerSponsor.readID);
-router.post('/sponsors/', isLoggedIn, controllerSponsor.save);
-router.put('/sponsors/:id', isLoggedIn, controllerSponsor.update);
-router.put('/sponsors/del/:id', isLoggedIn, controllerSponsor.deleteL);
-router.delete('/sponsors/:id', isLoggedIn, controllerSponsor.deleteF);
+router.post('/sponsors/', controllerSponsor.save);
+router.put('/sponsors/:id', controllerSponsor.update);
+router.put('/sponsors/del/:id', controllerSponsor.deleteL);
+router.delete('/sponsors/:id', controllerSponsor.deleteF);
 
 router.get('/conferences', controllerConference.readConference);
 router.get('/conferences/:id', controllerConference.readConferenceID);
@@ -34,11 +34,11 @@ router.post('/conferences/:idconf/participants/:idparticipant/', controllerConfe
 router.delete('/conferences/:idconf/participants/:idparticipant', controllerConference.deleteParticipant);
 
 router.get('/conferences/:idconf/sponsors/', controllerConference.readSponsor);
-router.post('/conferences/:idconf/sponsors/:idsponsor', isLoggedIn, controllerConference.saveSponsor);
-router.delete('/conferences/:idconf/sponsors/:idsponsor', isLoggedIn, controllerConference.deleteSponsor);
+router.post('/conferences/:idconf/sponsors/:idsponsor', controllerConference.saveSponsor);
+router.delete('/conferences/:idconf/sponsors/:idsponsor', controllerConference.deleteSponsor);
 
 router.get('/conferences/:idconf/speakers/', controllerConference.readSpeaker);
-router.post('/conferences/:idconf/speakers/:idspeaker', isLoggedIn, controllerConference.saveSpeaker);
+router.post('/conferences/:idconf/speakers/:idspeaker', controllerConference.saveSpeaker);
 router.delete('/conferences/:idconf/speakers/:idspeaker', controllerConference.deleteSpeaker);
 
 router.post('/contacts/emails', controllerMail.send);
@@ -70,12 +70,13 @@ router.delete('/conferences/:idconf/volunteers/:idvolunteer', controllerConferen
 
 module.exports = router;
 
+/*
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
     else {
         /*  res.status(jsonMessages.login.unauthorized.status).send(jsonMessages.login.unauthorized);*/
-        return next();
+        /*return next();
     }
-}
+}*/

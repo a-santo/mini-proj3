@@ -1,6 +1,12 @@
 const jsonMessagesPath = __dirname + "/../assets/jsonMessages/";
 const jsonMessages = require(jsonMessagesPath + "bd");
-const connect = require('../config/connectMySQL');
+//const connect = require('../config/connectMySQL');
+const dataConf = require('../tabelas/conference.json');
+const dataConfCom = require('../tabelas/conf_committee.json');
+const dataConfVol = require('../tabelas/conf_volunteers.json');
+const dataCommittee = require('../tabelas/committee.json');
+const dataVolunteers = require('../tabelas/volunteers.json');
+const fs = require("fs");
 //função de leitura que retorna o resultado no callback
 function readConference(req, res) {
     const query = connect.con.query('SELECT idConference, acronimo, nome, descricao, local, data FROM conference order by data desc', function(err, rows, fields) {
@@ -248,121 +254,185 @@ function deleteConfSpeaker(req, res) {
 }
 
 function readConfCommittee(req, res) {
-    const idconference = req.sanitize('idconf').escape();
-    const post = { idConference: idconference };
-    const query = connect.con.query('SELECT distinct committee.idCommitteeMember, nome, email, telefone, foto, instituicao, profissao FROM committee, conf_committee where ? and committee.idCommitteeMember = conf_committee.idCommitteeMember order by idCommitteeMember desc', post, function(err, rows, fields) {
-        console.log(query.sql);
-        if (err) {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+    const idconference = parseInt(req.sanitize('idconf').escape());
+    var confIndex = findConf(idconference);
+    if(confIndex || confIndex === 0) {
+        var resultados = []
+        dataConfCom.forEach(function (element, i) {
+            const membroIndex = findComM(element.idCommitteeMember)
+            if (membroIndex || membroIndex === 0) { resultados.push(dataCommittee[membroIndex]) }
+        });
+        if(resultados.length === 0) {
+            res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
+        } else {
+            res.send(resultados);
         }
-        else {
-            if (rows.length == 0) {
-                res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
-            }
-            else {
-                res.send(rows);
-            }
-        }
-    });
+
+    } else {
+        res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
+    }
 }
 
 function saveConfCommitteeMember(req, res) {
-    //receber os dados do formuário que são enviados por post
-    const idConf = req.sanitize('idconf').escape();
-    const idCommitteeMember = req.sanitize('idcommitteemember').escape();
-    if (idCommitteeMember != "NULL" && idConf != "NULL" && typeof(idCommitteeMember) != 'undefined' && typeof(idConf) != 'undefined') {
-        const post = { idCommitteeMember: idCommitteeMember, idConference: idConf };
-        //criar e executar a query de gravação na BD para inserir os dados presentes no post
-        const query = connect.con.query('INSERT INTO conf_committee SET ?', post, function(err, rows, fields) {
-            console.log(query.sql);
-            if (!err) {
-                res.status(jsonMessages.db.successInsert.status).send(jsonMessages.db.successInsert);
-            }
-            else {
-                console.log(err);
-                res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
-            }
+    const idConf = parseInt(req.sanitize('idconf').escape());
+    const idCommitteeMember = parseInt(req.sanitize('idcommitteemember').escape());
+
+    var confIndex = findConf(idConf);
+    var membroIndex = findComM(idCommitteeMember);
+
+    //se já existir a relação conferência/voluntário, não voltar a inserir
+    var dupeCheck = findDupConfCom(idConf, idCommitteeMember)
+    if(dupeCheck) { return res.send(jsonMessages.db.duplicateData); }
+
+    if((confIndex || confIndex === 0) && (membroIndex || membroIndex === 0)) {
+        dataConfCom.push({
+            "idCommitteeMember": dataCommittee[membroIndex].idCommitteeMember,
+            "idConference": dataConf[confIndex].idConference
         });
+        fs.writeFile("./tabelas/conf_committee.json", JSON.stringify(dataConfCom), err => {
+            if (err) throw res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+            res.status(jsonMessages.db.successInsert.status).send(jsonMessages.db.successInsert);
+        });
+
+    } else {
+        res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
     }
-    else
-        res.status(jsonMessages.db.requiredData.status).send(jsonMessages.db.requiredData);
 }
 
 function deleteConfCommitteeMember(req, res) {
     //criar e executar a query de leitura na BD
-    const idConf = req.sanitize('idconf').escape();
-    const idCommitteeMember = req.sanitize('idcommitteemember').escape();
-    const params = [idConf, idCommitteeMember];
-    const query = connect.con.query('DELETE FROM conf_committee where idConference = ? and idCommitteeMember = ?', params, function(err, rows, fields) {
-        console.log(query.sql);
-        if (!err) {
-            res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
-        }
-        else {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+    const idConf = parseInt(req.sanitize('idconf').escape());
+    const idCommitteeMember = parseInt(req.sanitize('idcommitteemember').escape());
+
+    var found = false;
+
+    // procurar membro com o ID especificado
+    dataConfCom.forEach(function (element, i) {
+        if (element.idConference === idConf && element.idCommitteeMember === idCommitteeMember) {
+            found = true;
+            dataConfCom.splice(i,1);
+            fs.writeFile("./tabelas/conf_committee.json", JSON.stringify(dataConfCom), err => {
+                if (err) throw err;
+            });
+            return res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
         }
     });
+    if (!found) { res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords); }
 }
 
 function readConfVolunteer(req, res) {
-    const idconference = req.sanitize('idconf').escape();
-    const post = { idConference: idconference };
-    const query = connect.con.query('SELECT distinct volunteers.idVolunteer, nome, telefone, foto FROM volunteers, conf_volunteers where ? and volunteers.idVolunteer = conf_volunteers.idVolunteer order by idVolunteer desc', post, function(err, rows, fields) {
-        console.log(query.sql);
-        if (err) {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+    const idconference = parseInt(req.sanitize('idconf').escape());
+    var confIndex = findConf(idconference);
+    if(confIndex || confIndex === 0) {
+        var resultados = []
+        dataConfVol.forEach(function (element, i) {
+            const volIndex = findVol(element.idVolunteer)
+            if (volIndex || volIndex === 0) { resultados.push(dataVolunteers[volIndex]) }
+        });
+        if(resultados.length === 0) {
+            res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
+        } else {
+            res.send(resultados);
         }
-        else {
-            if (rows.length == 0) {
-                res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
-            }
-            else {
-                res.send(rows);
-            }
-        }
-    });
+
+    } else {
+        res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
+    }
 }
 
 function saveConfVolunteer(req, res) {
-    //receber os dados do formuário que são enviados por post
-    const idConf = req.sanitize('idconf').escape();
-    const idVolunteer = req.sanitize('idvolunteer').escape();
-    if (idVolunteer != "NULL" && idConf != "NULL" && typeof(idVolunteer) != 'undefined' && typeof(idConf) != 'undefined') {
-        const post = { idVolunteer: idVolunteer, idConference: idConf };
-        //criar e executar a query de gravação na BD para inserir os dados presentes no post
-        const query = connect.con.query('INSERT INTO conf_volunteers SET ?', post, function(err, rows, fields) {
-            console.log(query.sql);
-            if (!err) {
-                res.status(jsonMessages.db.successInsert.status).send(jsonMessages.db.successInsert);
-            }
-            else {
-                console.log(err);
-                res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
-            }
+
+    const idConf = parseInt(req.sanitize('idconf').escape());
+    const idVolunteer = parseInt(req.sanitize('idvolunteer').escape());
+
+    var confIndex = findConf(idConf);
+    var volIndex = findVol(idVolunteer);
+
+    //se já existir a relação conferência/voluntário, não voltar a inserir
+    var dupeCheck = findDupConfVol(idConf, idVolunteer)
+    if(dupeCheck) { return res.send(jsonMessages.db.duplicateData); }
+
+    if((confIndex || confIndex === 0) && (volIndex || volIndex === 0)) {
+        dataConfCom.push({
+            "idVolunteer": dataVolunteers[volIndex].idVolunteer,
+            "idConference": dataConf[confIndex].idConference
         });
+        fs.writeFile("./tabelas/conf_volunteers.json", JSON.stringify(dataConfCom), err => {
+            if (err) throw res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+            res.status(jsonMessages.db.successInsert.status).send(jsonMessages.db.successInsert);
+        });
+
+    } else {
+        res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
     }
-    else
-        res.status(jsonMessages.db.requiredData.status).send(jsonMessages.db.requiredData);
 }
 
 function deleteConfVolunteer(req, res) {
     //criar e executar a query de leitura na BD
-    const idConf = req.sanitize('idconf').escape();
-    const idVolunteer = req.sanitize('idvolunteer').escape();
-    const params = [idConf, idVolunteer];
-    const query = connect.con.query('DELETE FROM conf_volunteers where idConference = ? and idVolunteer = ?', params, function(err, rows, fields) {
-        console.log(query.sql);
-        if (!err) {
-            res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
-        }
-        else {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+    const idConf = parseInt(req.sanitize('idconf').escape());
+    const idVolunteer = parseInt(req.sanitize('idvolunteer').escape());
+
+    var found = false;
+
+    // procurar membro com o ID especificado
+    dataConfVol.forEach(function (element, i) {
+        if (element.idConference === idConf && element.idVolunteer === idVolunteer) {
+            found = true;
+            dataConfVol.splice(i,1);
+            fs.writeFile("./tabelas/conf_volunteers.json", JSON.stringify(dataConfVol), err => {
+                if (err) throw err;
+            });
+            return res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
         }
     });
+    if (!found) { res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords); }
+}
+
+// funções auxiliares para encontrar conferência, membro do comité, voluntário por id e para verificar se os
+// dados a inserir nas "tabelas" relacionais conf_volunteers e conf_committee e evitar duplicação de dados
+function findConf(idConf) {
+    for (var i = 0; i < dataConf.length; i++) {
+        if (dataConf[i].idConference === idConf) {
+            return i
+        }
+    }
+    return null
+}
+
+function findComM(idMembro) {
+    for (var i = 0; i < dataCommittee.length; i++) {
+        if (dataCommittee[i].idCommitteeMember === idMembro) {
+            return i
+        }
+    }
+    return null
+}
+
+function findVol(idVol) {
+    for (var i = 0; i < dataVolunteers.length; i++) {
+        if (dataVolunteers[i].idVolunteer === idVol) {
+            return i
+        }
+    }
+    return null
+}
+
+function findDupConfCom(idConf, idComM) {
+    for (var i = 0; i < dataConfCom.length; i++) {
+        if (dataConfCom[i].idCommitteeMember === idComM && dataConfCom[i].idConference === idConf) {
+            return true
+        }
+    }
+    return  false
+}
+
+function findDupConfVol(idConf, idVol) {
+    for (var i = 0; i < dataConfVol.length; i++) {
+        if (dataConfVol[i].idVolunteer === idVol && dataConfVol[i].idConference === idConf) {
+            return true
+        }
+    }
+    return  false
 }
 
 //exportar as funções

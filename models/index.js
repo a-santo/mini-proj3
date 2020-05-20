@@ -1,3 +1,4 @@
+/*
 "use strict";
 let fs        = require("fs");
 let path      = require("path");
@@ -23,3 +24,4 @@ Object.keys(db).forEach(function(modelName) {
 });
 db.sequelize = sequelize;
 module.exports = db;
+*/

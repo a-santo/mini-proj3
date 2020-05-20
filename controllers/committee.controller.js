@@ -1,6 +1,8 @@
 const jsonMessagesPath = __dirname + "/../assets/jsonMessages/";
 const jsonMessages = require(jsonMessagesPath + "bd");
-const connect = require('../config/connectMySQL');
+const data = require('../tabelas/committee.json');
+const fs = require("fs");
+//const connect = require('../config/connectMySQL');
 
 function save(req, res) {
     const nome = req.sanitize('nome').escape();
@@ -21,7 +23,9 @@ function save(req, res) {
     }
     else {
         if (nome != "NULL" && email != "NULL" && typeof(nome) != "undefined") {
+            const novoID = data[data.length-1].idCommitteeMember + 1
             const post = {
+                idCommitteeMember: novoID,
                 nome: nome,
                 email: email,
                 telefone: telefone,
@@ -29,6 +33,13 @@ function save(req, res) {
                 instituicao: instituicao,
                 profissao: profissao
             };
+
+            data.push(post);
+            fs.writeFile("./tabelas/committee.json", JSON.stringify(data), err => {
+                if (err) throw err;
+                res.status(jsonMessages.db.successInsert.status).location(novoID).send(jsonMessages.db.successInsert);
+            });
+            /* DESATIVADA A CHAMADA À BD
             //criar e executar a query de gravação na BD para inserir os dados presentes no post
             const query = connect.con.query('INSERT INTO committee SET ?', post, function(err, rows, fields) {
                 console.log(query.sql);
@@ -39,49 +50,34 @@ function save(req, res) {
                     console.log(err);
                     res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
                 }
-            });
-        }
-        else
+            }); */
+        } else
             res.status(jsonMessages.db.requiredData.status).end(jsonMessages.db.requiredData);
     }
 }
 
 function read(req, res) {
-    //criar e executar a query de leitura na BD
-    const query = connect.con.query('SELECT idCommitteeMember, nome, email, foto, instituicao, profissao, telefone FROM committee order by idCommitteeMember desc', function(err, rows, fields) {
-        console.log(query.sql);
-        if (err) {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
-        }
-        else {
-            if (rows.length == 0) {
-                res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
-            }
-            else {
-                res.send(rows);
-            }
-        }
-    });
+    if (data.length === 0) {
+        res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
+    } else {
+        res.send(data);
+    }
 }
 
 function readID(req, res) {
-    const idCommitteeMember = req.sanitize('id').escape();
-    const post = { idCommitteeMember: idCommitteeMember };
-    connect.con.query('SELECT idCommitteeMember, nome, email, foto, instituicao, profissao, telefone FROM committee where idCommitteeMember = ? order by idCommitteeMember desc', post, function(err, rows, fields) {
-        if (err) {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
-        }
-        else {
-            if (rows.length == 0) {
-                res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords);
-            }
-            else {
-                res.send(rows);
-            }
+    const idCommitteeMember = parseInt(req.sanitize('id').escape());
+    var found = false;
+
+    // procurar membro com o ID especificado
+    data.forEach(element => {
+        if (element.idCommitteeMember === idCommitteeMember) {
+            found = true;
+            return res.status(200).send(element)
         }
     });
+
+    if (!found) { res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords); }
+
 }
 
 function updateM(req, res) {
@@ -102,37 +98,50 @@ function updateM(req, res) {
         res.send(errors);
         return;
     }
-    else {
-        if (idCommitteeMember != "NULL" && typeof(nome) != 'undefined' && typeof(email) != 'undefined' && typeof(idCommitteeMember) != 'undefined') {
-            const update = [nome, email, telefone, foto, instituicao, profissao, idCommitteeMember];
-            const query = connect.con.query('UPDATE committee SET nome =?, email =?, telefone=?, foto=?, instituicao=?, profissao=? WHERE idCommitteeMember=?', update, function(err, rows, fields) {
-                console.log(query.sql);
-                if (!err) {
-                    res.status(jsonMessages.db.successUpdate.status).send(jsonMessages.db.successUpdate);
-                }
-                else {
-                    console.log(err);
-                    res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
-                }
-            });
-        }
-        else
-            res.status(jsonMessages.db.requiredData.status).send(jsonMessages.db.requiredData);
+    else if (idCommitteeMember != "NULL" && typeof(nome) != 'undefined' && typeof(telefone) != 'undefined' && typeof(idCommitteeMember) != 'undefined') {
+        var found = false;
+        // procurar membro com o ID especificado
+        data.forEach(element => {
+            if (element.idCommitteeMember === idCommitteeMember) {
+                found = true;
+                element.name = nome;
+                element.email = email;
+                element.telefone = telefone;
+                element.foto = foto;
+                element.instituicao = instituicao;
+                element.profissao = profissao;
+                fs.writeFile("./tabelas/committee.json", JSON.stringify(data), err => {
+                    if (err) throw err;
+                });
+                res.status(jsonMessages.db.successUpdate.status).send(jsonMessages.db.successUpdate);
+            }
+        });
+        if (!found) { res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords); }
+    } else {
+        res.status(jsonMessages.db.requiredData.status).send(jsonMessages.db.requiredData);
     }
+
 }
 
 function deleteM(req, res) {
-    const update = parseInt(req.sanitize('id').escape())
-    const query = connect.con.query('DELETE FROM committee WHERE idCommitteeMember=?', update, function(err, rows, fields) {
-        console.log(query.sql);
-        if (!err) {
-            res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
-        }
-        else {
-            console.log(err);
-            res.status(jsonMessages.db.dbError.status).send(jsonMessages.db.dbError);
+    const idCommitteeMember = parseInt(req.sanitize('id').escape())
+
+    var found = false;
+
+    // procurar membro com o ID especificado
+    data.forEach(function (element, i) {
+        if (element.idCommitteeMember === idCommitteeMember) {
+            found = true;
+            data.splice(i,1);
+            fs.writeFile("./tabelas/committee.json", JSON.stringify(data), err => {
+                if (err) throw err;
+            });
+            return res.status(jsonMessages.db.successDelete.status).send(jsonMessages.db.successDelete);
         }
     });
+
+    if (!found) { res.status(jsonMessages.db.noRecords.status).send(jsonMessages.db.noRecords); }
+
 }
 
 module.exports = {

@@ -65,6 +65,17 @@ module.exports = {
             err_message: "email já existente",
             status: 409,
         },
+        duplicateData: {
+            msg: "dataDuplicated",
+            message: {
+                eng: "Data already exists!",
+                pt: "Os dados já se encontram na base de dados!"
+            },
+            success: false,
+            err_code: 1,
+            err_message: "dados já existem",
+            status: 409,
+        },
         requiredData: {
             msg: "dataMissing",
             message: {

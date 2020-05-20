@@ -1,3 +1,4 @@
+/*
 const mysql = require('mysql2');
 module.exports = {
 	con: mysql.createConnection({
@@ -7,3 +8,4 @@ module.exports = {
 		database : 'webitclo_webbook'
 	})
 };
+*/
